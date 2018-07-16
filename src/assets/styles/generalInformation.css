@@ -1,0 +1,84 @@
+
+.maincontent {
+    margin: 2.5%;
+    margin-top: 1%;
+}
+
+.maincontent__header {
+    color: #CF2338;
+    font-weight: 500;
+    font-size: 2rem;
+}
+
+.content .content__cardcustom {
+    padding: 0px ;
+    background: #6D829F;
+}
+
+.content {
+    margin: 2.6% !important;
+    margin-top: 1% !important;
+}
+
+.content__cardcustom__body {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1.5rem;
+    color: white;
+}
+
+
+
+.information__header {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.skill {
+    margin-top: 20px;
+}
+
+.iconEdit {
+    width: 13px;
+    margin-left: 2%;
+}
+
+.textAreaCustom {
+    width: 100% !important;
+    height: 100px;
+}
+
+.inputChange {}
+
+.card-custom {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    border: 1px solid black !important;
+}
+
+.personalInfo {
+  display: inline;
+}
+.information__content{
+  display: inline;
+}
+
+.content__cardcustom__cardContent{
+    margin: 0 auto;
+}
+.information__container__content{
+  display: inline;
+}
+
+#personalInfo {
+    border-right: none !important;
+}
+#personalStatement{
+    border-left: none !important;
+}
+@media print {
+  .content__card-body__custom{
+    margin-top: 80px;
+  }
+    -webkit-print-color-adjust: exact;
+}
