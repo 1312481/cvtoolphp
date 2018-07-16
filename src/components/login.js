@@ -57,25 +57,19 @@ class Login extends Component {
     }
     else {
       if (this.state.tagname !== "" && this.state.filename === "") {
-        toast.error(`Ban phai file JSON cho Name Tag: ${this.state.tagname}` , {
+        toast.error(`Ban phai file JSON cho Name Tag: ${this.state.tagname}`, {
           autoClose: 2000
         });
       }
       else {
         sessionStorage.setItem('user', this.state.user);
         this.props.userLoading();
-        POSTAPI('http://localhost:3001/api/checkUserExistence', this.state.profile, this.state.user)
-          .then(data => {
-            if (data === 'failed') {
-              toast.error('User nay chua ton tai, ban phai nhap file JSON  ', {
-                autoClose: 2000
-              });
-            }
-            else if (data === 'success') {
-              POSTAPI('http://localhost:3001/api/register', this.state.profile, this.state.user, this.state.tagname)
-              this.props.history.push('/dashboard')
-            }
-          })
+        
+    
+        POSTAPI('http://localhost/cvgenerator/api/versions/version.php', this.state.profile, this.state.user)
+          .then(data => 
+            console.log(data)
+          )
       }
 
     }
