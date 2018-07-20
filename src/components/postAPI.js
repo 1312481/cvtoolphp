@@ -1,19 +1,14 @@
 
-const POSTAPI = (link, profile, key, version) => {
+const POSTAPI = (link,data) => {
     return (fetch(link, {
         method: 'POST',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
-        body: JSON.stringify({
-            profile: profile,
-            key: key,
-            version: version
-        })
+        body: data
     }))
-        .then(respone =>
-            respone.json()
+        .then(response =>
+            response.json()
         )
 
 }

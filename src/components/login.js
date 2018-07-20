@@ -5,6 +5,7 @@ import FileReaderInput from "react-file-reader-input";
 import { connect } from 'react-redux';
 import * as actions from '../actions/profile';
 import POSTAPI from './postAPI';
+import POSTAPIUSER from './postAPIUser';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Slide } from 'react-toastify';
@@ -16,7 +17,8 @@ class Login extends Component {
       filename: "",
       tagname: "",
       user: "",
-      profile: ""
+      profile: "",
+      file: ""
     };
   }
   checkExtensionName(filename) {
@@ -27,6 +29,7 @@ class Login extends Component {
   }
   handleChange = (e, results) => {
     console.log(results[0][1]);
+    this.setState({ file: results[0][1] });
     if (this.checkExtensionName(results[0][1].name)) {
       results.forEach(result => {
         const [e, file] = result;
@@ -64,10 +67,17 @@ class Login extends Component {
       else {
         sessionStorage.setItem('user', this.state.user);
         this.props.userLoading();
-        
-    
-        POSTAPI('http://localhost/cvgenerator/api/versions/version.php', this.state.profile, this.state.user)
-          .then(data => 
+        let data = new FormData();
+        data.append('file', this.state.file);
+
+        // console.log(data)
+        //http://localhost/cvgenerator/api/versions/version.php
+        POSTAPI('http://localhost/cvgenerator/api/versions/version.php', data)
+          .then(data =>
+            console.log(data)
+          )
+        POSTAPIUSER('http://localhost/cvgenerator/api/versions/user.php', this.state.user, this.state.tagname)
+          .then(data =>
             console.log(data)
           )
       }
