@@ -47,13 +47,14 @@ class GeneralInformation extends Component {
   handleKeyNamePress(e, field, fieldName) {
 
     if (e.key === 'Enter') {
+     
       let value = { ...this.props.profile[this.props.version.currentVersions] };
       let user = sessionStorage.getItem("user");
       value.data.personalInfo[fieldName] = e.target.value;
       let tempState = { ...this.state };
       tempState[field] = !tempState[field];
       this.setState(tempState);
-
+      console.log(value.tagName)
       POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
 
       this.props.profileUpdate(value, this.props.version.currentVersions);

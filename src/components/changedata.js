@@ -6,7 +6,7 @@ import Error from './error';
 import Loading from './loading';
 import pencil from '../assets/images/pencil.svg';
 import POSTAPI from './postAPI'
-
+import POSTAPIDATA from './postAPIData'
 class ChangeData extends Component {
     constructor(props) {
         super(props);
@@ -15,11 +15,13 @@ class ChangeData extends Component {
             version: [],
             showMenu: false,
             user: "",
+            tagName: '',
             data: []
         }
     }
     componentWillMount() {
         let user = sessionStorage.getItem("user");
+        
         this.setState({ user: user });
         const length = this.props.version.numberOfVersions;
         var a = false;
@@ -29,6 +31,7 @@ class ChangeData extends Component {
         }
         this.setState({ edit: temp })
         this.setState({ data: this.props.profile })
+        this.setState({ tagName: this.props.profile[this.props.version.currentVersions].tagName })
     }
     increment() {
         this.props.versionIncrement();
@@ -46,16 +49,20 @@ class ChangeData extends Component {
     handleKeyNamePress(e, pro, index) {
         if (e.key === 'Enter') {
             let value = { ...this.props.profile[this.props.version.currentVersions] };
+            let oldversion= sessionStorage.getItem("tagname");
+            console.log(this.props.profile[this.props.version.currentVersions].tagName);
             let user = sessionStorage.getItem("user");
             value.tagName = e.target.value;
             let temp = [...this.state.edit];
             temp[index] = !temp[index];
             this.setState({ edit: temp });
+            POSTAPIDATA('http://localhost/cvtoolbackendphp/api/changetagname.php', e.target.value,this.state.tagName, user, );
             this.props.profileUpdate(value, index);
-            POSTAPI('http://localhost:3001/api/updateversion', e.target.value, user, index);
+
         }
     }
     handleChange(e, index) {
+        console.log(this.props.profile[this.props.version.currentVersions].tagName);
         let temp = [...this.state.data];
         temp[index]["tagName"] = e.target.value;
         this.setState({
