@@ -8,7 +8,9 @@ const POSTAPI = (link,data) => {
         body: data
     }))
         .then(response =>
-            response.json()
+            respone => respone.json()
+        
+            
         )
 
 }

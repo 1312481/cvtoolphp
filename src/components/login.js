@@ -14,12 +14,16 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      submit: false,
       filename: "",
       tagname: "",
       user: "",
       profile: "",
-      file: ""
+      file: File
     };
+  }
+  renameFilename(file) {
+    return file.renameFilename = "YourNewfileName." + file.split('.').pop();
   }
   checkExtensionName(filename) {
     if (filename.split('.').pop() === "json") {
@@ -28,7 +32,6 @@ class Login extends Component {
     else return false;
   }
   handleChange = (e, results) => {
-    console.log(results[0][1]);
     this.setState({ file: results[0][1] });
     if (this.checkExtensionName(results[0][1].name)) {
       results.forEach(result => {
@@ -53,34 +56,60 @@ class Login extends Component {
     this.setState({ tagname: e.target.value });
   }
   submit = () => {
+
     if (this.state.user === "") {
       toast.error('Ban phai nhap ten dang nhap ', {
         autoClose: 2000
       });
+      
     }
     else {
       if (this.state.tagname !== "" && this.state.filename === "") {
         toast.error(`Ban phai file JSON cho Name Tag: ${this.state.tagname}`, {
           autoClose: 2000
         });
+
       }
       else {
+        this.setState({submit: !this.state.submit});
         sessionStorage.setItem('user', this.state.user);
         this.props.userLoading();
+        let fileTemp = `${this.state.user}${this.state.tagname}.json`;
         let data = new FormData();
-        data.append('file', this.state.file);
+        data.append('file', this.state.file, fileTemp);
+        POSTAPIUSER('http://localhost/cvtoolbackendphp/api/returnuser.php', this.state.user, this.state.tagname)
+          .then((resultCheckUser) => {
+            if (resultCheckUser === 'user is existed') {
 
-        // console.log(data)
-        //http://localhost/cvgenerator/api/versions/version.php
-        POSTAPI('http://localhost/cvgenerator/api/versions/version.php', data)
-          .then(data =>
-            console.log(data)
-          )
-        POSTAPIUSER('http://localhost/cvgenerator/api/versions/user.php', this.state.user, this.state.tagname)
-          .then(data =>
-            console.log(data)
-          )
+              POSTAPI('http://localhost/cvtoolbackendphp/api/uploadfile.php', data)
+                .then(resultUploadFile =>
+                  console.log(resultUploadFile)
+                )
+              POSTAPIUSER('http://localhost/cvtoolbackendphp/api/addjson.php', this.state.user, this.state.tagname)
+                .then((resultCreateUser) => {
+                  console.log(resultCreateUser);
+                  this.props.history.push('/dashboard');
+                })
+
+            }
+            else if (resultCheckUser === 'user is not existed') {
+              this.props.userLoading();
+              POSTAPIUSER('http://localhost/cvtoolbackendphp/api/createuser.php', this.state.user, this.state.tagname)
+                .then((resultCreateUser) => {
+                  POSTAPI('http://localhost/cvtoolbackendphp/api/uploadfile.php', data)
+                    .then(resultUploadFile => {
+                      console.log(resultUploadFile);
+                      this.props.history.push('/dashboard')
+                    }
+                    )
+
+                }
+                )
+            }
+          })
+
       }
+
 
     }
 
@@ -148,7 +177,7 @@ class Login extends Component {
 
               <div className="loginPage__container_containersubmit">
                 <div className="col-7 loginPage__container_submit">
-                  <button onClick={() => this.submit()} className="loginPage__container__buttonsubmit">
+                  <button onClick={() => this.submit()} disabled={this.state.submit} className="loginPage__container__buttonsubmit">
                     Submit
                   </button>
                 </div>
@@ -169,7 +198,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
 
     profileUpdate: (profile) => dispatch(actions.updateProfileData(profile)),
-    userLoading: (user) => dispatch(actions.isProfileLoaded(false))
+    userLoading: (user) => dispatch(actions.isProfileLoaded(false)),
+    userLoadingTrue: (user) => dispatch(actions.isProfileLoaded(true))
   };
 };
 

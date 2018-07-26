@@ -15,19 +15,20 @@ class Dashboard extends Component {
 
   componentDidMount() {
 
-    let link = 'http://localhost:3001/api/';
+    let link = 'http://localhost/cvtoolbackendphp/api/getlistdatauser.php';
     var user = sessionStorage.getItem("user");
-    let url = link + `${user}`;
+    let url = link + `?user=${user}`;
     this.props.fetchData(url);
 
   }
   render() {
     if (this.props.isProfileError) {
       return <Error />;
-    } else if (!this.props.isProfileLoaded) {
+    } else if (this.props.isProfileLoaded === false) {
       return <Loading />
 
     }
+    
     else return (
 
       <div className="App">

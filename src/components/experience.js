@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Slide } from "react-toastify";
 import POSTAPI from "./postAPI";
-
+import POSTAPIDATA from './postAPIData'
 
 
 class Experience extends Component {
@@ -32,7 +32,7 @@ class Experience extends Component {
     let projectTemp = [];
     for (let i = 0;
       i <
-      this.props.profile[currentVersions].experience.length;
+      this.props.profile[currentVersions].data.experience.length;
       i++
     ) {
       let tempRes = [];
@@ -40,7 +40,7 @@ class Experience extends Component {
       for (
         let j = 0;
         j <
-        this.props.profile[currentVersions].experience[i].responsibility.length;
+        this.props.profile[currentVersions].data.experience[i].responsibility.length;
         j++
       ) {
         tempRes.push(false);
@@ -56,7 +56,7 @@ class Experience extends Component {
       projectDescriptionEdited: projectTemp,
       projectTechnologyEdited: projectTemp,
       experience:
-        this.props.profile[currentVersions].experience
+        this.props.profile[currentVersions].data.experience
     });
 
   }
@@ -66,7 +66,7 @@ class Experience extends Component {
     let projectTemp = [];
     for (let i = 0;
       i <
-      nextProps.profile[currentVersions].experience.length;
+      nextProps.profile[currentVersions].data.experience.length;
       i++
     ) {
       let tempRes = [];
@@ -74,7 +74,7 @@ class Experience extends Component {
       for (
         let j = 0;
         j <
-        nextProps.profile[currentVersions].experience[i].responsibility.length;
+        nextProps.profile[currentVersions].data.experience[i].responsibility.length;
         j++
       ) {
         tempRes.push(false);
@@ -107,12 +107,13 @@ class Experience extends Component {
   }
 
   updateFieldData(e, field, fieldName, index, resIndex) {
-    let value = { ...this.props.profile };
-    let user = sessionStorage.getItem("user");
     const { currentVersions } = this.props.version;
+    let value = { ...this.props.profile[currentVersions]  };
+    let user = sessionStorage.getItem("user");
+
     if (e.key === "Enter") {
       if (typeof resIndex === "number") {
-        value[currentVersions].experience[
+        value.data.experience[
           index
         ].responsibility[resIndex] =
           e.target.value;
@@ -120,45 +121,35 @@ class Experience extends Component {
         temp[index][resIndex] = !temp[index][resIndex];
         this.setState({ projectResEdited: temp });
       } else {
-        value[currentVersions].experience[index][fieldName] =
+        value.data.experience[index][fieldName] =
           e.target.value;
         let temp = [...this.state[field]];
         temp[index] = !temp[index];
         this.setState({ [field]: temp });
       }
-      POSTAPI(
-        "http://localhost:3001/api/updateexperience",
-        value[this.props.version.currentVersions].experience,
-        user,
-        this.props.version.currentVersions
-      );
-
-      this.props.profileUpdate(value);
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
     }
   }
 
   experienceDeleting(index, resIndex) {
-    let value = { ...this.props.profile };
-    let user = sessionStorage.getItem("user");
     const { currentVersions } = this.props.version;
+    let value = { ...this.props.profile[currentVersions] };
+    let user = sessionStorage.getItem("user");
+
     if (typeof resIndex === "number") {
       if (window.confirm("Do you really want to delete this ?!?!")) {
-        value[currentVersions].experience[
+        value.data.experience[
           index
         ].responsibility.splice(resIndex, 1);
       }
     } else {
       if (window.confirm("Do you really want to delete this ?!?!")) {
-        value[currentVersions].experience.splice(index, 1);
+        value.data.experience.splice(index, 1);
       }
     }
-    POSTAPI(
-      "http://localhost:3001/api/updateexperience",
-      value[this.props.version.currentVersions].experience,
-      user,
-      this.props.version.currentVersions
-    );
-    this.props.profileUpdate(value);
+    POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+    this.props.profileUpdate(value,this.props.version.currentVersions);
   }
 
   experienceAdding(resIndex) {
@@ -166,17 +157,12 @@ class Experience extends Component {
     const { currentVersions } = this.props.version;
     let user = sessionStorage.getItem("user");
     if (typeof resIndex === "number") {
-      let value = { ...this.props.profile };
-      value[currentVersions].experience[
+      let value = { ...this.props.profile[currentVersions] };
+      value.data.experience[
         resIndex
       ].responsibility.push(defaultName);
-      POSTAPI(
-        "http://localhost:3001/api/updateexperience",
-        value[this.props.version.currentVersions].experience,
-        user,
-        this.props.version.currentVersions
-      );
-      this.props.profileUpdate(value);
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
       toast.success("Adding Responsibility Success!!!!", {
         autoClose: 2000
       });
@@ -192,15 +178,10 @@ class Experience extends Component {
       let projectResEditedTemp = [...this.state.projectResEdited];
       projectResEditedTemp.push([false, false]);
       this.setState({ projectResEdited: projectResEditedTemp })
-      let value = { ...this.props.profile };
-      value[currentVersions].experience.push(tempExp);
-      POSTAPI(
-        "http://localhost:3001/api/updateexperience",
-        value[this.props.version.currentVersions].experience,
-        user,
-        this.props.version.currentVersions
-      );
-      this.props.profileUpdate(value);
+      let value = { ...this.props.profile[currentVersions]  };
+      value.data.experience.push(tempExp);
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
 
       toast.success("Adding Experience Success!!!!", {
         autoClose: 2000
@@ -267,7 +248,7 @@ class Experience extends Component {
 
           </div>
         </div>
-        {this.props.profile[this.props.version.currentVersions].experience.map(
+        {this.props.profile[this.props.version.currentVersions].data.experience.map(
           (exp, index) => {
             return (
               <div className="maintable" key={"experience" + index}>
@@ -336,7 +317,7 @@ class Experience extends Component {
                         <ul>
                           {this.props.profile[
                             this.props.version.currentVersions
-                          ].experience[index].responsibility.map(
+                          ].data.experience[index].responsibility.map(
                             (res, resIndex) => {
                               return (
                                 <li
@@ -447,7 +428,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    profileUpdate: profile => dispatch(actions.updateProfileData(profile))
+    profileUpdate: (profile, version) => dispatch(actions.updateProfileData(profile, version))
   };
 };
 

@@ -4,6 +4,7 @@ import pencil from '../assets/images/pencil.svg'
 import { connect } from 'react-redux'
 import * as actions from '../actions/profile'
 import POSTAPI from './postAPI'
+import POSTAPIDATA from './postAPIData'
 
 
 class GeneralInformation extends Component {
@@ -39,7 +40,7 @@ class GeneralInformation extends Component {
   nameEditing(field) {
     let temp = { ...this.state };
     temp[field] = !temp[field];
-    this.setState({ field: this.props.profile[this.props.version.currentVersions].personalInfo[field] })
+    this.setState({ field: this.props.profile[this.props.version.currentVersions].data.personalInfo[field] })
     this.setState(temp);
   }
 
@@ -48,11 +49,13 @@ class GeneralInformation extends Component {
     if (e.key === 'Enter') {
       let value = { ...this.props.profile[this.props.version.currentVersions] };
       let user = sessionStorage.getItem("user");
-      value.personalInfo[fieldName] = e.target.value;
+      value.data.personalInfo[fieldName] = e.target.value;
       let tempState = { ...this.state };
       tempState[field] = !tempState[field];
       this.setState(tempState);
-      POSTAPI('http://localhost:3001/api/updategeneralinfomation', value.personalInfo, user, this.props.version.currentVersions);
+
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+
       this.props.profileUpdate(value, this.props.version.currentVersions);
     }
   }
@@ -96,7 +99,7 @@ class GeneralInformation extends Component {
             :
             (
               <div >
-                {this.props.profile[this.props.version.currentVersions].personalInfo[fieldName]}
+                {this.props.profile[this.props.version.currentVersions].data.personalInfo[fieldName]}
                 <img onClick={() => this.nameEditing(field)} className="iconEdit" src={pencil} alt="pencil" />
               </div>
             )
@@ -128,7 +131,7 @@ class GeneralInformation extends Component {
             :
             (
               (<div className="information__container__content" >
-                {this.props.profile[this.props.version.currentVersions].personalInfo[fieldName]}
+                {this.props.profile[this.props.version.currentVersions].data.personalInfo[fieldName]}
                 <img onClick={() => this.nameEditing(field)} className="iconEdit" src={pencil} alt="pencil" />
               </div>)
             )
@@ -156,7 +159,7 @@ class GeneralInformation extends Component {
                 {this.renderProperInputHeader('positionEdited', 'currentPosition')}
               </div>
             </div>
-            <img className="card-img-top" src={this.props.profile[this.props.version.currentVersions].personalInfo.image} alt="personalImage" />
+            <img className="card-img-top" src={this.props.profile[this.props.version.currentVersions].data.personalInfo.image} alt="personalImage" />
           </div>
 
           <div className="col-7 offset-1">
@@ -203,37 +206,37 @@ class GeneralInformation extends Component {
 
   componentWillMount() {
       this.setState({ 
-        name: this.props.profile[this.props.version.currentVersions].personalInfo.name,
-        currentPosition: this.props.profile[this.props.version.currentVersions].personalInfo.currentPosition,
-        phoneNumber: this.props.profile[this.props.version.currentVersions].personalInfo.phoneNumber,
-        address: this.props.profile[this.props.version.currentVersions].personalInfo.address,
-        email: this.props.profile[this.props.version.currentVersions].personalInfo.email,
-        facebook: this.props.profile[this.props.version.currentVersions].personalInfo.facebook,
-        linkedin: this.props.profile[this.props.version.currentVersions].personalInfo.linkedin,
-        github: this.props.profile[this.props.version.currentVersions].personalInfo.github,
-        portfolio: this.props.profile[this.props.version.currentVersions].personalInfo.portfolio,
-        personalStatement: this.props.profile[this.props.version.currentVersions].personalInfo.personalStatement,
-        englishLevel: this.props.profile[this.props.version.currentVersions].personalInfo.englishLevel,
-        skill: this.props.profile[this.props.version.currentVersions].personalInfo.skill,
-        image: this.props.profile[this.props.version.currentVersions].personalInfo.image
+        name: this.props.profile[this.props.version.currentVersions].data.personalInfo.name,
+        currentPosition: this.props.profile[this.props.version.currentVersions].data.personalInfo.currentPosition,
+        phoneNumber: this.props.profile[this.props.version.currentVersions].data.personalInfo.phoneNumber,
+        address: this.props.profile[this.props.version.currentVersions].data.personalInfo.address,
+        email: this.props.profile[this.props.version.currentVersions].data.personalInfo.email,
+        facebook: this.props.profile[this.props.version.currentVersions].data.personalInfo.facebook,
+        linkedin: this.props.profile[this.props.version.currentVersions].data.personalInfo.linkedin,
+        github: this.props.profile[this.props.version.currentVersions].data.personalInfo.github,
+        portfolio: this.props.profile[this.props.version.currentVersions].data.personalInfo.portfolio,
+        personalStatement: this.props.profile[this.props.version.currentVersions].data.personalInfo.personalStatement,
+        englishLevel: this.props.profile[this.props.version.currentVersions].data.personalInfo.englishLevel,
+        skill: this.props.profile[this.props.version.currentVersions].data.personalInfo.skill,
+        image: this.props.profile[this.props.version.currentVersions].data.personalInfo.image
        })
     
   }
   componentWillReceiveProps(nextProps){
     this.setState({ 
-      name: nextProps.profile[nextProps.version.currentVersions].personalInfo.name,
-      currentPosition: nextProps.profile[nextProps.version.currentVersions].personalInfo.currentPosition,
-      phoneNumber: nextProps.profile[nextProps.version.currentVersions].personalInfo.phoneNumber,
-      address: nextProps.profile[nextProps.version.currentVersions].personalInfo.address,
-      email: nextProps.profile[nextProps.version.currentVersions].personalInfo.email,
-      facebook: nextProps.profile[nextProps.version.currentVersions].personalInfo.facebook,
-      linkedin: nextProps.profile[nextProps.version.currentVersions].personalInfo.linkedin,
-      github: nextProps.profile[nextProps.version.currentVersions].personalInfo.github,
-      portfolio: nextProps.profile[nextProps.version.currentVersions].personalInfo.portfolio,
-      personalStatement: nextProps.profile[nextProps.version.currentVersions].personalInfo.personalStatement,
-      englishLevel: nextProps.profile[nextProps.version.currentVersions].personalInfo.englishLevel,
-      skill: nextProps.profile[nextProps.version.currentVersions].personalInfo.skill,
-      image: nextProps.profile[nextProps.version.currentVersions].personalInfo.image
+      name: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.name,
+      currentPosition: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.currentPosition,
+      phoneNumber: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.phoneNumber,
+      address: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.address,
+      email: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.email,
+      facebook: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.facebook,
+      linkedin: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.linkedin,
+      github: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.github,
+      portfolio: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.portfolio,
+      personalStatement: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.personalStatement,
+      englishLevel: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.englishLevel,
+      skill: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.skill,
+      image: nextProps.profile[nextProps.version.currentVersions].data.personalInfo.image
      })
   }
 

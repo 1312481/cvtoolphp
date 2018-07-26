@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Slide} from 'react-toastify';
 import POSTAPI from './postAPI'
+import POSTAPIDATA from './postAPIData'
 
 class Education extends Component {
   constructor(props) {
@@ -34,30 +35,34 @@ class Education extends Component {
 
   updateFieldData(e, field, fieldName, index) {
     if (e.key === "Enter") {
-      let value = { ...this.props.profile };
+      let value = { ...this.props.profile[this.props.version.currentVersions]  };
       let user = sessionStorage.getItem("user");
-      value[this.props.version.currentVersions].education[index][fieldName] = e.target.value;
+      value.data.education[index][fieldName] = e.target.value;
       let temp = [...this.state[field]];
       temp[index] = !temp[index];
       let newstate = {};
       newstate[field] = temp;
       this.setState(newstate);
-      this.props.profileUpdate(value);
-      POSTAPI('http://localhost:3001/api/updateeducation', value[this.props.version.currentVersions].education, user, this.props.version.currentVersions)
 
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
+  
 
     }
+
   }
 
   educationDeleting(index) {
     if (window.confirm("Do you really want to delete this ?!?!")) {
-      let value = { ...this.props.profile };
+      let value = { ...this.props.profile[this.props.version.currentVersions]  };
       let user = sessionStorage.getItem("user");
-      value[this.props.version.currentVersions].education.splice(index, 1);
-      this.props.profileUpdate(value);
-      POSTAPI('http://localhost:3001/api/updateeducation', value[this.props.version.currentVersions].education, user, this.props.version.currentVersions)
+
+      value.data.education.splice(index, 1);
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
 
     }
+   
   }
 
   educationAdding() {
@@ -65,20 +70,24 @@ class Education extends Component {
     tempEducation.name = '';
     tempEducation.major = '';
     tempEducation.gradutedTime = '';
-    let value = { ...this.props.profile };
-    let user = sessionStorage.getItem("user");
-    value[this.props.version.currentVersions].education.push(tempEducation);
 
-    this.props.profileUpdate(value);
-    POSTAPI('http://localhost:3001/api/updateeducation', value[this.props.version.currentVersions].education, user, this.props.version.currentVersions)
-    toast.success('Adding Education Success!!!!', {
+    let value = { ...this.props.profile[this.props.version.currentVersions]  };
+    let user = sessionStorage.getItem("user");
+    value.data.education.push(tempEducation);
+
+    toast.success('Adding Technical Skills Success!!!!', {
       autoClose: 2000
     });
+    POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+    this.props.profileUpdate(value,this.props.version.currentVersions);
+
+
+ 
 
   }
 
   componentWillMount() {
-    const length = this.props.profile[this.props.version.currentVersions].education.length;
+    const length = this.props.profile[this.props.version.currentVersions].data.education.length;
     let projectResTemp = [];
     for (let i = 0; i <= length; i++) {
       let temp = false;
@@ -88,7 +97,7 @@ class Education extends Component {
       nameEducationEdited: projectResTemp,
       majorEducationEdited: projectResTemp,
       graduatedEducationEdited: projectResTemp,
-      education: this.props.profile[this.props.version.currentVersions].education
+      education: this.props.profile[this.props.version.currentVersions].data.education
     });
 
 
@@ -120,7 +129,7 @@ class Education extends Component {
           />
         ) : (
             <span className="">
-              {this.props.profile[this.props.version.currentVersions].education[index][fieldName]}
+              {this.props.profile[this.props.version.currentVersions].data.education[index][fieldName]}
 
               <img
                 onClick={() => this.nameEducationEditing(index, field)}
@@ -170,7 +179,7 @@ class Education extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.profile[this.props.version.currentVersions].education.map((education, index) => (
+              {this.props.profile[this.props.version.currentVersions].data.education.map((education, index) => (
                 <tr key={"education" + index}>
                   {this.renderProperInput("nameEducationEdited", "name", index)}
                   {this.renderProperInput("majorEducationEdited", "major", index)}
@@ -200,7 +209,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    profileUpdate: profile => dispatch(actions.updateProfileData(profile))
+    profileUpdate: (profile, version) => dispatch(actions.updateProfileData(profile, version))
   };
 };
 

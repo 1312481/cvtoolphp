@@ -62,7 +62,6 @@ export function version(state = initialState, action) {
             }
         case ActionTypes.VERSION_NUMBER:
             {
-                console.log(action)
                 return Object.assign({}, state, {
                     numberOfVersions: action.data,
                     currentVersions: action.data - 1
@@ -75,15 +74,17 @@ export function version(state = initialState, action) {
 }
 
 export function profile(state = [], action) {
+
     switch (action.type) {
+      
         case ActionTypes.FETCH_PROFILE_DATA_SUCCESS: {
-            return action.profile[0].data;
+            return action.profile;
         }
         case ActionTypes.UPDATE_PROFILE_DATA: {
-       
+            console.log(state);
+            console.log(action);
             let newState = [...state];
-            console.log(newState);
-            newState[action.version] = action.profile;
+            newState[action.version].data = action.profile.data;
             return newState;
 
         }

@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Slide } from 'react-toastify';
 import POSTAPI from './postAPI'
-
+import POSTAPIDATA from './postAPIData'
 class Skill extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +28,7 @@ class Skill extends Component {
   }
 
   componentWillMount() {
-    const length = this.props.profile[this.props.version.currentVersions].technicalSkill.length;
+    const length = this.props.profile[this.props.version.currentVersions].data.technicalSkill.length;
     let projectResTemp = [];
     for (let i = 0; i <= length; i++) {
       let temp = false;
@@ -37,26 +37,28 @@ class Skill extends Component {
     this.setState({
       skillNameEdited: projectResTemp,
       skillDetailEdited: projectResTemp,
-      skill: this.props.profile[this.props.version.currentVersions].technicalSkill
+      skill: this.props.profile[this.props.version.currentVersions].data.technicalSkill
     });
   }
   componentWillReceiveProps(nextProps){
     this.setState({ 
-      skill: nextProps.profile[nextProps.version.currentVersions].technicalSkill
+      skill: nextProps.profile[nextProps.version.currentVersions].data.technicalSkill
     })
   }
   updateFieldData(e, field, fieldName, index) {
     if (e.key === "Enter") {
-      let value = { ...this.props.profile };
+      let value = { ...this.props.profile[this.props.version.currentVersions]  };
       let user = sessionStorage.getItem("user");
-      value[this.props.version.currentVersions].technicalSkill[index][fieldName] = e.target.value;
+      value.data.technicalSkill[index][fieldName] = e.target.value;
       let temp = [...this.state[field]];
       temp[index] = !temp[index];
       let newstate = {};
       newstate[field] = temp;
       this.setState(newstate);
-      this.props.profileUpdate(value);
-      POSTAPI('http://localhost:3001/api/updatetechnicalskill', value[this.props.version.currentVersions].technicalSkill, user, this.props.version.currentVersions)
+
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
+  
 
     }
 
@@ -64,12 +66,12 @@ class Skill extends Component {
   }
   skillDeleting(index) {
     if (window.confirm("Do you really want to delete this ?!?!")) {
-      let value = { ...this.props.profile };
+      let value = { ...this.props.profile[this.props.version.currentVersions]  };
       let user = sessionStorage.getItem("user");
 
-      value[this.props.version.currentVersions].technicalSkill.splice(index, 1);
-      this.props.profileUpdate(value);
-      POSTAPI('http://localhost:3001/api/updatetechnicalskill', value[this.props.version.currentVersions].technicalSkill, user, this.props.version.currentVersions)
+      value.data.technicalSkill.splice(index, 1);
+      POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+      this.props.profileUpdate(value,this.props.version.currentVersions);
 
     }
   }
@@ -78,14 +80,16 @@ class Skill extends Component {
     tempSkill.name = '';
     tempSkill.detail = '';
 
-    let value = { ...this.props.profile };
+    let value = { ...this.props.profile[this.props.version.currentVersions]  };
     let user = sessionStorage.getItem("user");
-    value[this.props.version.currentVersions].technicalSkill.push(tempSkill);
-    this.props.profileUpdate(value);
+    value.data.technicalSkill.push(tempSkill);
+
     toast.success('Adding Technical Skills Success!!!!', {
       autoClose: 2000
     });
-    POSTAPI('http://localhost:3001/api/updatetechnicalskill', value[this.props.version.currentVersions].technicalSkill, user, this.props.version.currentVersions)
+    this.props.profileUpdate(value);
+    POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
+    this.props.profileUpdate(value,this.props.version.currentVersions);
 
 
   }
@@ -110,7 +114,7 @@ class Skill extends Component {
           />
         ) : (
             <span className="">
-              {this.props.profile[this.props.version.currentVersions].technicalSkill[index][fieldName]}
+              {this.props.profile[this.props.version.currentVersions].data.technicalSkill[index][fieldName]}
 
               <img
                 onClick={() => this.nameSkillEditing(index, field)}
@@ -160,7 +164,7 @@ class Skill extends Component {
             </thead>
             <tbody>
 
-              {this.props.profile[this.props.version.currentVersions].technicalSkill.map((tech, index) => {
+              {this.props.profile[this.props.version.currentVersions].data.technicalSkill.map((tech, index) => {
                 return (
 
                   <tr key={'skill' + index}>
@@ -197,7 +201,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    profileUpdate: (profile) => dispatch(actions.updateProfileData(profile))
+    profileUpdate: (profile, version) => dispatch(actions.updateProfileData(profile, version))
   };
 };
 
