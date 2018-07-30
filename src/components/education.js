@@ -104,7 +104,7 @@ class Education extends Component {
   }
   componentWillReceiveProps(nextProps){
     this.setState({ 
-      education: nextProps.profile[nextProps.version.currentVersions].education
+      education: nextProps.profile[nextProps.version.currentVersions].data.education
     })
   }
   handleChange(e, field, fieldName, index) {

@@ -89,7 +89,7 @@ class Experience extends Component {
       projectPositionEdited: projectTemp,
       projectDescriptionEdited: projectTemp,
       projectTechnologyEdited: projectTemp,
-      experience: nextProps.profile[nextProps.version.currentVersions].experience
+      experience: nextProps.profile[nextProps.version.currentVersions].data.experience
     })
   }
   experienceEditing(index, field, resIndex) {

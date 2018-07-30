@@ -9,7 +9,7 @@ import POSTAPIUSER from './postAPIUser';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Slide } from 'react-toastify';
-
+import defaultDataJson from '../assets/default.json'
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -61,7 +61,7 @@ class Login extends Component {
       toast.error('Ban phai nhap ten dang nhap ', {
         autoClose: 2000
       });
-      
+
     }
     else {
       if (this.state.tagname !== "" && this.state.filename === "") {
@@ -71,7 +71,8 @@ class Login extends Component {
 
       }
       else {
-        this.setState({submit: !this.state.submit});
+
+        this.setState({ submit: !this.state.submit });
         sessionStorage.setItem('user', this.state.user);
         this.props.userLoading();
         let fileTemp = `${this.state.user}${this.state.tagname}.json`;
@@ -79,22 +80,37 @@ class Login extends Component {
         data.append('file', this.state.file, fileTemp);
         POSTAPIUSER('http://localhost/cvtoolbackendphp/api/returnuser.php', this.state.user, this.state.tagname)
           .then((resultCheckUser) => {
-            if (resultCheckUser === 'user is existed') {
 
-              POSTAPI('http://localhost/cvtoolbackendphp/api/uploadfile.php', data)
-                .then(resultUploadFile =>
-                  console.log(resultUploadFile)
-                )
-              POSTAPIUSER('http://localhost/cvtoolbackendphp/api/addjson.php', this.state.user, this.state.tagname)
+            if (resultCheckUser === 'user is existed') {
+              console.log('user da ton tai');
+              if (this.state.tagname === "" && this.state.filename === "") {
+                this.props.history.push('/dashboard');
+              }
+              else {
+                POSTAPI('http://localhost/cvtoolbackendphp/api/uploadfile.php', data)
+                  .then(resultUploadFile =>
+                    console.log(resultUploadFile)
+                  )
+                POSTAPIUSER('http://localhost/cvtoolbackendphp/api/addjson.php', this.state.user, this.state.tagname)
+                  .then((resultCreateUser) => {
+                    console.log(resultCreateUser);
+                    this.props.history.push('/dashboard');
+                  })
+              }
+
+
+            }
+            else if (resultCheckUser === 'user is not existed') {
+              console.log('user chua ton tai');
+              if (this.state.filename === "") {
+                POSTAPIUSER('http://localhost/cvtoolbackendphp/api/defaultaccount.php', this.state.user, 'default')
                 .then((resultCreateUser) => {
                   console.log(resultCreateUser);
                   this.props.history.push('/dashboard');
                 })
-
-            }
-            else if (resultCheckUser === 'user is not existed') {
-              this.props.userLoading();
-              POSTAPIUSER('http://localhost/cvtoolbackendphp/api/createuser.php', this.state.user, this.state.tagname)
+              }
+              else {
+                POSTAPIUSER('http://localhost/cvtoolbackendphp/api/createuser.php', this.state.user, this.state.tagname)
                 .then((resultCreateUser) => {
                   POSTAPI('http://localhost/cvtoolbackendphp/api/uploadfile.php', data)
                     .then(resultUploadFile => {
@@ -102,9 +118,10 @@ class Login extends Component {
                       this.props.history.push('/dashboard')
                     }
                     )
-
                 }
                 )
+              }
+             
             }
           })
 

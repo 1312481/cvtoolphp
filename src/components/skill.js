@@ -87,7 +87,6 @@ class Skill extends Component {
     toast.success('Adding Technical Skills Success!!!!', {
       autoClose: 2000
     });
-    this.props.profileUpdate(value);
     POSTAPIDATA('http://localhost/cvtoolbackendphp/api/updatedata.php', value.data,value.tagName,user);
     this.props.profileUpdate(value,this.props.version.currentVersions);
 

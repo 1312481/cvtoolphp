@@ -16,12 +16,13 @@ class ChangeData extends Component {
             showMenu: false,
             user: "",
             tagName: '',
-            data: []
+            data: [],
+            timeOutId: ''
         }
     }
     componentWillMount() {
         let user = sessionStorage.getItem("user");
-        
+
         this.setState({ user: user });
         const length = this.props.version.numberOfVersions;
         var a = false;
@@ -33,6 +34,10 @@ class ChangeData extends Component {
         this.setState({ data: this.props.profile })
         this.setState({ tagName: this.props.profile[this.props.version.currentVersions].tagName })
     }
+    componentWillReceiveProps(nextProps) {
+        this.setState({ tagName: this.props.profile[nextProps.version.currentVersions].tagName })
+    }
+
     increment() {
         this.props.versionIncrement();
     }
@@ -49,20 +54,18 @@ class ChangeData extends Component {
     handleKeyNamePress(e, pro, index) {
         if (e.key === 'Enter') {
             let value = { ...this.props.profile[this.props.version.currentVersions] };
-            let oldversion= sessionStorage.getItem("tagname");
-            console.log(this.props.profile[this.props.version.currentVersions].tagName);
+            let oldversion = sessionStorage.getItem("tagname");
             let user = sessionStorage.getItem("user");
             value.tagName = e.target.value;
             let temp = [...this.state.edit];
             temp[index] = !temp[index];
             this.setState({ edit: temp });
-            POSTAPIDATA('http://localhost/cvtoolbackendphp/api/changetagname.php', e.target.value,this.state.tagName, user, );
+            POSTAPIDATA('http://localhost/cvtoolbackendphp/api/changetagname.php', e.target.value, this.state.tagName, user);
             this.props.profileUpdate(value, index);
 
         }
     }
     handleChange(e, index) {
-        console.log(this.props.profile[this.props.version.currentVersions].tagName);
         let temp = [...this.state.data];
         temp[index]["tagName"] = e.target.value;
         this.setState({
@@ -73,6 +76,18 @@ class ChangeData extends Component {
         let temp = [...this.state["edit"]];
         temp[index] = !temp[index];
         this.setState({ edit: temp })
+    }
+    onBlurHandler() {
+        this.timeOutId = setTimeout(() => {
+            this.setState({
+                showMenu: false
+            });
+        });
+    }
+
+    // If a child receives focus, do not close the popover.
+    onFocusHandler() {
+        clearTimeout(this.timeOutId);
     }
     render() {
 
@@ -97,51 +112,58 @@ class ChangeData extends Component {
                             {this.state.user}
                         </div>
                     </div>
-                    <div>
+                    <div onBlur={() => this.onBlurHandler()}
+                        onFocus={() => this.onFocusHandler()}>
                         Choose Version:
-                        <button className="btn btn-secondary dropdown-toggle customButton" onClick={() => this.showMenu()}>
+                        <button className="btn btn-secondary dropdown-toggle customButton" aria-haspopup="true"
+                            aria-expanded={this.state.showMenu} onClick={() => this.showMenu()}>
                             {this.props.profile[this.props.version.currentVersions].tagName}
                         </button>
-                    </div>
-                    <div className={(this.state.showMenu ? 'menu' : null)}>
-                        {
-                            this.state.showMenu ?
-                                (
-                                    this.props.profile.map((pro, index) => {
-                                        return (
-                                            <div key={"profile" + index}>
-                                                {this.state.edit[index] ?
-                                                    (<div  key={"divinput" + index}>
-                                                        <input key={"input" + index} className="inputChange form-control"
-                                                            value={this.state.data[index].tagName}
-                                                            onChange={(e) => this.handleChange(e, index)}
-                                                            onKeyDown={(e) => this.handleKeyNamePress(e, pro, index)} />
-                                                    </div>) :
-                                                    (
-                                                        <div>
-                                                            <div>
-                                                                <div className="dropdown-item-custom" key={"pro" + index}
+                        {this.state.showMenu ? (
+                            <div className={(this.state.showMenu ? 'menu' : null)}>
+                                {
+                                    this.state.showMenu ?
+                                        (
+                                            this.props.profile.map((pro, index) => {
+                                                return (
+                                                    <div key={"profile" + index}>
+                                                        {this.state.edit[index] ?
+                                                            (<div key={"divinput" + index}>
+                                                                <input key={"input" + index} className="inputChange form-control"
+                                                                    value={this.state.data[index].tagName}
+                                                                    onChange={(e) => this.handleChange(e, index)}
+                                                                    onKeyDown={(e) => this.handleKeyNamePress(e, pro, index)} />
+                                                            </div>) :
+                                                            (
+                                                                <div>
+                                                                    <div>
+                                                                        <div className="dropdown-item-custom" key={"pro" + index}
 
-                                                                    onClick={() => this.changeProfile(index)}>
-                                                                    Version {index}: {this.props.profile[index].tagName}
-                                                                </div>
-                                                                <div className="imageEditing">
-                                                                    <img onClick={() => this.editing(index)} className="iconEdit" src={pencil} alt="pencil" key={"image" + index} />
-                                                                </div>
-                                                            </div>
+                                                                            onClick={() => this.changeProfile(index)}>
+                                                                            Version {index}: {this.props.profile[index].tagName}
+                                                                        </div>
+                                                                        <div className="imageEditing">
+                                                                            <img onClick={() => this.editing(index)} className="iconEdit" src={pencil} alt="pencil" key={"image" + index} />
+                                                                        </div>
+                                                                    </div>
 
-                                                        </div>
-                                                    )
-                                                }
-                                            </div>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                )
+                                            })
+                                        ) :
+                                        (
+                                            null
                                         )
-                                    })
-                                ) :
-                                (
-                                    null
-                                )
-                        }
+                                }
+                            </div>
+                        ) : null}
+
                     </div>
+
+
                 </div>
             </div>
 
